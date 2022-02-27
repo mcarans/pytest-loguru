@@ -3,11 +3,11 @@ import logging
 
 from loguru import logger
 
-from pytest_loguru.plugin import caplog
+from pytest_loguru.plugin import caplog  # noqa: F401
 
 
 class TestLogging:
-    def test_setup_logging(self, caplog):
+    def test_setup_logging(self, caplog):  # noqa: F811
         with caplog.at_level(logging.ERROR):
             text = "Division by zero!"
 

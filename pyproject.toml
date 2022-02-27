@@ -1,3 +1,99 @@
 [build-system]
-requires = [ "setuptools>=45" ]
+requires = [ "setuptools>=45", "setuptools_scm[toml]>=6.2", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/pytest_loguru/_version.py"
+local_scheme = "no-local-version"
+version_scheme = "python-simplified-semver"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+line_length = 79
+multi_line_output = 3
+
+[tool.flakeheaven]
+# make output nice
+format = "grouped"
+max_line_length = 79
+# show line of source code in output
+show_source = true
+exclude = ["_version.py"]
+
+    # list of plugins and rules for them
+    [tool.flakeheaven.plugins]
+    mccabe = ["+*"]
+    pycodestyle = ["+*", "-E203", "-E501", "-W503"]
+    pyflakes = ["+*"]
+    pylint = ["+*"]
+    flake8-isort = ["+*"]
+    flake8-black = ["+*"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+addopts = "--color=yes"
+log_cli = 1
+
+[tool.coverage.paths]
+source = ["src/pytest_loguru", "*/site-packages/pytest_loguru"]
+
+[tool.coverage.report]
+omit = [
+    "*/setup.py",
+    "*/python?.?/*",
+    "*/venv/*",
+    "*/site-packages/*",
+    "*/tests/*",
+    "*__init__*"
+]
+
+exclude_lines = [
+    "pragma: no cover",  # Have to re-enable the standard pragma
+    "def __repr__",  # Don't complain about missing
+    "if self.debug",  # debug-only code
+    "raise AssertionError",  # Don't complain if tests don't hit
+    "raise NotImplementedError",  # defensive assertion code
+    "if 0:",  # Don't complain if non-runnable code
+    "if __name__ == .__main__.:"  # isn't run
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+envlist = py310, lint
+
+[gh-actions]
+python =
+    3: py310, lint
+
+[testenv]
+recreate = true
+wheel = true
+deps =
+    -r test-requirements.txt
+commands =
+    pytest --cov=pytest_loguru --no-cov-on-fail --junitxml=.tox/test-results.xml --cov-report=xml --cov-report=term-missing
+
+[testenv:lint]
+wheel_build_env = py310
+deps =
+    flakeheaven
+    flake8
+    flake8-isort
+    flake8-black
+commands =
+    flakeheaven lint src tests
+
+[testenv:publish]
+wheel_build_env = py310
+passenv = SSH_AUTH_SOCK TWINE_USERNAME TWINE_PASSWORD
+deps =
+    twine
+
+commands =
+    twine upload {distdir}/*
+"""
