@@ -1,6 +1,6 @@
-import pytest
-from _pytest.logging import LogCaptureFixture
-from loguru import logger
+import pytest  # pragma: no cover
+from _pytest.logging import LogCaptureFixture  # pragma: no cover
+from loguru import logger  # pragma: no cover
 
 
 @pytest.fixture
