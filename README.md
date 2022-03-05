@@ -5,4 +5,7 @@
 
 ### pytest-loguru
 
-A pytest plugin to add support for loguru to pytest's caplog fixture.
+A pytest plugin to add support for loguru to pytest's caplog fixture. You can install 
+it from pypi with `pip install pytest-loguru`.
+
+Note that coverage is 100% but the coverage tool is confused by the fixture decorator.
