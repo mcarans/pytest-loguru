@@ -10,6 +10,7 @@ class TestLogging:
     def test_setup_logging(self, caplog):  # noqa: F811
         with caplog.at_level(logging.ERROR):
             text = "Division by zero!"
+            text2 = "shouldn't be logged"
 
             def divide(a, b):
                 return a / b
@@ -20,3 +21,6 @@ class TestLogging:
                 logger.exception(text)
 
             assert text in caplog.text
+
+            logger.info(text2)
+            assert text2 not in caplog.text
