@@ -20,7 +20,7 @@ def caplog(caplog: LogCaptureFixture) -> None:
         return record["level"].no >= caplog.handler.level
 
     handler_id = logger.add(
-        caplog.handler, level="TRACE", format="{message}", filter=filter_
+        caplog.handler, level=0, format="{message}", filter=filter_
     )
     yield caplog
     logger.remove(handler_id)
