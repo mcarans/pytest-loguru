@@ -21,7 +21,6 @@ def caplog(request: SubRequest) -> None:
     def filter_(record):
         return record["level"].no >= orig_caplog.handler.level
 
-
     handler_id = logger.add(
         orig_caplog.handler, level=0, format="{message}", filter=filter_
     )
