@@ -90,7 +90,7 @@ commands =
 
 [testenv:publish]
 wheel_build_env = py310
-passenv = SSH_AUTH_SOCK TWINE_USERNAME TWINE_PASSWORD
+passenv = SSH_AUTH_SOCK,TWINE_USERNAME,TWINE_PASSWORD
 deps =
     twine
 
