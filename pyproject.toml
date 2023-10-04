@@ -50,6 +50,7 @@ exclude_lines = [
     "if __name__ == .__main__.:"  # isn't run
 ]
 
+[tool.tox]
 legacy_tox_ini = """
 [tox]
 envlist = py311, lint
