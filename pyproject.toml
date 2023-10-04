@@ -15,22 +15,12 @@ profile = "black"
 line_length = 79
 multi_line_output = 3
 
-[tool.flakeheaven]
-# make output nice
-format = "grouped"
-max_line_length = 79
-# show line of source code in output
-show_source = true
+[tool.flake8]
 exclude = ["_version.py"]
-
-    # list of plugins and rules for them
-    [tool.flakeheaven.plugins]
-    mccabe = ["+*"]
-    pycodestyle = ["+*", "-E203", "-E501", "-W503"]
-    pyflakes = ["+*"]
-    pylint = ["+*"]
-    flake8-isort = ["+*"]
-    flake8-black = ["+*"]
+ignore = ["E203", "E501", "W503"]
+max-line-length = 79
+count = true
+show_source = true
 
 [tool.pytest.ini_options]
 pythonpath = "src"
@@ -60,40 +50,37 @@ exclude_lines = [
     "if __name__ == .__main__.:"  # isn't run
 ]
 
-[tool.tox]
 legacy_tox_ini = """
 [tox]
-isolated_build = true
-envlist = py310, lint
+envlist = py311, lint
 
 [gh-actions]
 python =
-    3: py310, lint
+    3: py311, lint
 
 [testenv]
-recreate = true
-wheel = true
+package = wheel
+wheel_build_env = .pkg
 deps =
     -r test-requirements.txt
 commands =
-    pytest --cov=pytest_loguru --no-cov-on-fail --junitxml=.tox/test-results.xml --cov-report=xml --cov-report=term-missing
+    pytest --cov=hdx --no-cov-on-fail --junitxml=.tox/test-results.xml --cov-report=xml --cov-report=term-missing
 
 [testenv:lint]
-wheel_build_env = py310
 deps =
-    flakeheaven
     flake8
     flake8-isort
     flake8-black
+    flake8-pyproject
 commands =
-    flakeheaven lint src tests
+    flake8 --color=always src tests
 
 [testenv:publish]
-wheel_build_env = py310
-passenv = SSH_AUTH_SOCK,TWINE_USERNAME,TWINE_PASSWORD
+package = sdist
+pass_env = SSH_AUTH_SOCK, TWINE_USERNAME, TWINE_PASSWORD
 deps =
     twine
 
 commands =
-    twine upload {distdir}/*
+    twine upload {work_dir}/{package_env}/dist/*
 """
