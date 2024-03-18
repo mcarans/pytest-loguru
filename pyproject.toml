@@ -32,10 +32,7 @@ classifiers = [
 
 requires-python = ">=3.8"
 
-dependencies = [
-    "loguru",
-    "pytest"
-]
+dependencies = ["loguru"]
 
 dynamic = ["version"]
 
@@ -46,6 +43,9 @@ Homepage = "https://github.com/mcarans/pytest-loguru"
 
 [project.entry-points.pytest11]
 loguru = "pytest_loguru.plugin"
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
 
 #########
 # Hatch #
