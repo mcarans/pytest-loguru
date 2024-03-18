@@ -1,4 +1,5 @@
 """Logging caplog test"""
+
 import logging
 
 from loguru import logger
