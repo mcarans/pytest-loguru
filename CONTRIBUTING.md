@@ -2,10 +2,10 @@
 
 ## Environment
 
-Development is currently done using Python 3.11. We recommend using a virtual
+Development is currently done using Python 3.12. We recommend using a virtual
 environment such as ``venv``:
 
-    python3.11 -m venv venv
+    python3.12 -m venv venv
     source venv/bin/activate
 
 In your virtual environment, please install all packages for
@@ -28,7 +28,7 @@ the line that begins with `ARGS` to:
     ARGS=(hook-impl --config=.config/pre-commit-config.yaml --hook-type=pre-commit)
 
 With pre-commit, all code is formatted according to
-[ruff](https://github.com/astral-sh/ruff) guidelines.
+[ruff](https://docs.astral.sh/ruff/) guidelines.
 
 To check if your changes pass pre-commit without committing, run:
 
@@ -40,16 +40,36 @@ To run the tests and view coverage, execute:
 
     pytest -c .config/pytest.ini --cov hdx --cov-config .config/coveragerc
 
+Follow the example set out already in ``documentation/main.md`` as you write the documentation.
+
 ## Packages
 
-[pip-tools](https://github.com/jazzband/pip-tools) is used for
+[uv](https://github.com/astral-sh/uv) is used for
 package management.  If you’ve introduced a new package to the
 source code (i.e.anywhere in `src/`), please add it to the
 `project.dependencies` section of
 `pyproject.toml` with any known version constraints.
+
+For adding packages for testing or development, add them to
+the `test` or `dev` sections under `[project.optional-dependencies]`.
 
 Any changes to the dependencies will be automatically reflected in
 `requirements.txt` with `pre-commit`, but you can re-generate
 the file without committing by executing:
 
     pre-commit run pip-compile --all-files --config=.config/pre-commit-config.yaml
+
+## Project
+
+[Hatch](https://hatch.pypa.io/) is used for project management. The project
+can be built using:
+
+    hatch build
+
+Linting and syntax checking can be run with:
+
+    hatch fmt --check
+
+Tests can be executed using:
+
+    hatch test

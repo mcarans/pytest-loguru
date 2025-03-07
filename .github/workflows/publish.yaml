@@ -25,9 +25,5 @@ jobs:
     - name: Build with hatch
       run: |
         hatch build
-    - name: Publish with hatch
-      env:
-        HATCH_INDEX_USER: ${{secrets.HATCH_INDEX_USER}}
-        HATCH_INDEX_AUTH: ${{secrets.HATCH_INDEX_AUTH}}
-      run: |
-        hatch publish
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

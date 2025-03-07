@@ -1,5 +1,6 @@
 line-length = 79
 exclude = ["_version.py"]
+target-version = "py38"
 
 [lint]
 # List of rules: https://docs.astral.sh/ruff/rules/
