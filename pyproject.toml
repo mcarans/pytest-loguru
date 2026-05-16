@@ -1,3 +1,7 @@
+#########################
+# Project Configuration #
+#########################
+
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
@@ -6,8 +10,8 @@ build-backend = "hatchling.build"
 name = "pytest-loguru"
 description = "Pytest Loguru"
 authors = [{name = "Michael Rans"}]
-license = "MIT"
-keywords = ["loguru",  "py.test", "pytest"]
+license = {text = "MIT"}
+keywords = ["loguru", "py.test", "pytest"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -21,7 +25,6 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
@@ -30,14 +33,10 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Typing :: Typed",
 ]
-
-requires-python = ">=3.8"
-
-dependencies = ["loguru"]
-
-dynamic = ["version"]
-
 readme = "README.md"
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = ["loguru"]
 
 [project.urls]
 Homepage = "https://github.com/mcarans/pytest-loguru"
@@ -45,23 +44,17 @@ Homepage = "https://github.com/mcarans/pytest-loguru"
 [project.entry-points.pytest11]
 loguru = "pytest_loguru.plugin"
 
-[project.optional-dependencies]
-test = ["pytest", "pytest-cov"]
-dev = ["pre-commit"]
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pre-commit",
+    "ruff==0.9.9",
+]
 
-#########
-# Hatch #
-#########
-
-# Build
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/pytest_loguru"]
-
-[tool.hatch.build.hooks.vcs]
-version-file = "src/pytest_loguru/_version.py"
-
-# Versioning
+# ----------------------------------------------------------------------------
+# Hatchling (Build & Versioning)
+# ----------------------------------------------------------------------------
 
 [tool.hatch.version]
 source = "vcs"
@@ -70,26 +63,70 @@ source = "vcs"
 local_scheme = "no-local-version"
 version_scheme = "python-simplified-semver"
 
-# Tests
+[tool.hatch.build.hooks.vcs]
+version-file = "src/pytest_loguru/_version.py"
 
-[tool.hatch.envs.hatch-test]
-features = ["test"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/pytest_loguru"]
 
-[[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.12"]
+# ----------------------------------------------------------------------------
+# Ruff (Linting & Formatting)
+# ----------------------------------------------------------------------------
 
-[tool.hatch.envs.hatch-test.scripts]
-run = """
-       pytest -c .config/pytest.ini --rootdir=. --junitxml=test-results.xml \
-       --cov --cov-config=.config/coveragerc --no-cov-on-fail \
-       --cov-report=lcov --cov-report=term-missing
-       """
+[tool.ruff]
+line-length = 79
+target-version = "py38"
+src = ["src"]
+exclude = ["_version.py"]
 
-[tool.hatch.envs.hatch-static-analysis]
-dependencies = ["ruff==0.9.9"]
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "I",  # isort
+]
+ignore = [
+    "E501",  # Line too long
+]
 
-[tool.hatch.envs.hatch-static-analysis.scripts]
-format-check = ["ruff format --config .config/ruff.toml --check --diff {args:.}",]
-format-fix = ["ruff format --config .config/ruff.toml {args:.}",]
-lint-check = ["ruff check --config .config/ruff.toml {args:.}",]
-lint-fix = ["ruff check --config .config/ruff.toml --fix {args:.}",]
+[tool.ruff.lint.isort]
+known-local-folder = ["pytest_loguru"]
+
+# ----------------------------------------------------------------------------
+# Pytest (Testing)
+# ----------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+log_cli = true
+addopts = """
+    --color=yes
+    --rootdir=.
+    --junitxml=test-results.xml
+    --cov
+    --no-cov-on-fail
+    --cov-report=lcov
+    --cov-report=term-missing
+"""
+
+# ----------------------------------------------------------------------------
+# Coverage (Reporting)
+# ----------------------------------------------------------------------------
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/_version.py"]
+
+[tool.coverage.report]
+exclude_also = [
+    "from ._version",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@(abc\\.)?abstractmethod",
+]
