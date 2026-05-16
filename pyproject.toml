@@ -28,6 +28,7 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
+    "Typing :: Typed",
 ]
 
 requires-python = ">=3.8"
