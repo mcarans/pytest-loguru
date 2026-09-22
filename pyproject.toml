@@ -36,7 +36,7 @@ classifiers = [
 readme = "README.md"
 dynamic = ["version"]
 requires-python = ">=3.8"
-dependencies = ["loguru"]
+dependencies = ["loguru", "pytest>=6.2"]
 
 [project.urls]
 Homepage = "https://github.com/mcarans/pytest-loguru"
