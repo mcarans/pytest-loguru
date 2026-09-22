@@ -21,6 +21,31 @@ and from conda-forge with:
 conda install -c conda-forge pytest-loguru
 ```
 
+## Usage
+
+Once installed, the plugin is registered automatically through pytest's
+`pytest11` entry point, so no import or configuration is needed. Messages
+logged with loguru show up in `caplog` just like standard `logging` records,
+and `caplog.at_level` / `caplog.set_level` filter them as usual:
+
+```python
+import logging
+
+from loguru import logger
+
+
+def test_logs(caplog):
+    logger.warning("something happened")
+    assert "something happened" in caplog.text
+
+
+def test_levels(caplog):
+    with caplog.at_level(logging.ERROR):
+        logger.info("ignored")
+        logger.error("kept")
+    assert caplog.messages == ["kept"]
+```
+
 Note that coverage is 100% but the coverage tool is confused by the fixture decorator.
 
 # Development
