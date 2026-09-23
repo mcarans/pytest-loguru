@@ -5,7 +5,15 @@ on:
     types: [published]
 
 jobs:
+  test:
+    uses: ./.github/workflows/run-python-tests.yaml
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
 
     environment:
