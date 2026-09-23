@@ -15,19 +15,30 @@ jobs:
       checks: write
       pull-requests: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in sync with requires-python and the classifiers in
+        # pyproject.toml. The default in .python-version runs lint and
+        # publishes the reports.
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    name: build (Python ${{ matrix.python-version }})
+
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: uv sync --frozen
 
       - name: Check styling
+        if: matrix.python-version == '3.12'
         run: |
           uv run ruff format --check
           uv run ruff check
@@ -36,14 +47,14 @@ jobs:
         run: uv run pytest
 
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
+        if: always() && matrix.python-version == '3.12'
         with:
           files: test-results.xml
 
       - name: Publish in Coveralls
-        uses: coverallsapp/github-action@v2
-        if: always()
+        uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
+        if: always() && matrix.python-version == '3.12'
         with:
           flag-name: tests
           format: lcov
