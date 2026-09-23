@@ -37,11 +37,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
-      - name: Check styling
+      - name: Run pre-commit
         if: matrix.python-version == '3.12'
-        run: |
-          uv run ruff format --check
-          uv run ruff check
+        run: uvx pre-commit run --all-files --show-diff-on-failure
 
       - name: Test with pytest
         run: uv run pytest
