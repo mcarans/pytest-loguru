@@ -2,6 +2,8 @@ name: Run tests
 
 on:
   workflow_dispatch:
+  # Called by publish.yaml so a release only publishes after the tests pass.
+  workflow_call:
   push:
     branches-ignore: [gh-pages, "dependabot/**"]
   pull_request:
