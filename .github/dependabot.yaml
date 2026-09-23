@@ -16,3 +16,9 @@ updates:
     schedule:
       # Check for updates to Python dependencies in uv.lock every week
       interval: "weekly"
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      # Check for updates to hook revs in .pre-commit-config.yaml every week
+      interval: "weekly"
