@@ -19,7 +19,7 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.12.18
+    rev: 0.12.19
     hooks:
       # Ensure the lockfile is up-to-date with pyproject.toml
       - id: uv-lock
