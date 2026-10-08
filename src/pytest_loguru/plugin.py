@@ -1,5 +1,6 @@
 """Pytest plugin that routes loguru records into the caplog fixture."""
-import logging               # pragma: no cover
+
+import logging  # pragma: no cover
 from typing import Iterator  # pragma: no cover
 
 import pytest  # pragma: no cover
