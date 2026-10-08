@@ -1,3 +1,5 @@
+"""Pytest plugin that routes loguru records into the caplog fixture."""
+
 from typing import Iterator  # pragma: no cover
 
 import pytest  # pragma: no cover
@@ -8,7 +10,9 @@ from loguru import logger  # pragma: no cover
 def caplog(
     caplog: pytest.LogCaptureFixture,
 ) -> Iterator[pytest.LogCaptureFixture]:
-    """Emitting logs from loguru's logger.log means that they will not show up in
+    """Make caplog capture records emitted through loguru.
+
+    Emitting logs from loguru's logger.log means that they will not show up in
     caplog which only works with Python's standard logging. This adds the same
     LogCaptureHandler being used by caplog to hook into loguru.
 
