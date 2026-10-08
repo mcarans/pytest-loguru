@@ -6,7 +6,12 @@ only see ``caplog`` via the ``pytest11`` entry point declared in
 suite fails if that entry point is broken or removed.
 """
 
+import re
+from pathlib import Path
+
 pytest_plugins = ["pytester"]
+
+README = Path(__file__).resolve().parents[2] / "README.md"
 
 
 def run_inner(pytester, source):
@@ -25,6 +30,14 @@ def test_plugin_is_registered_via_entry_point(pytester):
         """,
     )
     result.assert_outcomes(passed=1)
+
+
+def test_readme_usage_example(pytester):
+    """The ```python example under "## Usage" in README.md passes."""
+    usage = README.read_text().split("## Usage", 1)[1]
+    example = re.search(r"```python\n(.*?)```", usage, re.DOTALL).group(1)
+    result = run_inner(pytester, example)
+    result.assert_outcomes(passed=2)
 
 
 def test_exception_is_captured(pytester):
