@@ -1,7 +1,7 @@
-from typing import Iterator  # pragma: no cover
+from typing import Iterator
 
-import pytest  # pragma: no cover
-from loguru import logger  # pragma: no cover
+import pytest
+from loguru import logger
 
 
 @pytest.fixture

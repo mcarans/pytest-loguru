@@ -49,7 +49,7 @@ loguru = "pytest_loguru.plugin"
 [dependency-groups]
 dev = [
     "pytest",
-    "pytest-cov",
+    "coverage",
     "pre-commit",
     "ruff==0.16.8",
 ]
@@ -105,21 +105,23 @@ addopts = """
     --color=yes
     --rootdir=.
     --junitxml=test-results.xml
-    --cov
-    --no-cov-on-fail
-    --cov-report=lcov
-    --cov-report=term-missing
 """
 
 # ----------------------------------------------------------------------------
 # Coverage (Reporting)
 # ----------------------------------------------------------------------------
 
+# Run as `coverage run -m pytest`, not with pytest-cov: the plugin is imported
+# through its pytest11 entry point before pytest-cov starts measuring, so
+# pytest-cov misses every module-level line in plugin.py.
+
 [tool.coverage.run]
 source = ["src"]
 omit = ["*/_version.py"]
 
 [tool.coverage.report]
+fail_under = 100
+show_missing = true
 exclude_also = [
     "from ._version",
     "def __repr__",
