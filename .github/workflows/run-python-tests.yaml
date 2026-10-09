@@ -44,7 +44,14 @@ jobs:
         run: uvx pre-commit run --all-files --show-diff-on-failure
 
       - name: Test with pytest
-        run: uv run pytest
+        run: uv run coverage run -m pytest
+
+      # lcov before report, so Coveralls still gets data when coverage is
+      # below fail_under and `coverage report` fails the job.
+      - name: Check coverage
+        run: |
+          uv run coverage lcov
+          uv run coverage report
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0

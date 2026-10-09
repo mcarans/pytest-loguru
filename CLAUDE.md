@@ -62,3 +62,11 @@ Tests can be executed using:
 ```shell
 uv run pytest
 ```
+
+Coverage must stay at 100%. Measure it with `coverage run` rather than
+pytest-cov, which starts too late to see the plugin's import:
+
+```shell
+uv run coverage run -m pytest
+uv run coverage report
+```

@@ -3,8 +3,8 @@
 import logging  # pragma: no cover
 from typing import Iterator  # pragma: no cover
 
-import pytest  # pragma: no cover
-from loguru import logger  # pragma: no cover
+import pytest
+from loguru import logger
 
 
 def _add_sink(handler: logging.Handler) -> int:
