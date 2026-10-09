@@ -1,4 +1,4 @@
-"""Logging caplog tests
+"""Logging caplog tests.
 
 The plugin is exercised through ``pytester`` so that the inner test runs
 only see ``caplog`` via the ``pytest11`` entry point declared in
@@ -6,15 +6,22 @@ only see ``caplog`` via the ``pytest11`` entry point declared in
 suite fails if that entry point is broken or removed.
 """
 
+import re
+from pathlib import Path
+
 pytest_plugins = ["pytester"]
+
+README = Path(__file__).resolve().parents[2] / "README.md"
 
 
 def run_inner(pytester, source):
+    """Write ``source`` as a test module and run pytest on it."""
     pytester.makepyfile(source)
     return pytester.runpytest("-p", "no:cacheprovider")
 
 
 def test_plugin_is_registered_via_entry_point(pytester):
+    """The plugin is loaded through its ``pytest11`` entry point."""
     result = run_inner(
         pytester,
         """
@@ -27,7 +34,16 @@ def test_plugin_is_registered_via_entry_point(pytester):
     result.assert_outcomes(passed=1)
 
 
+def test_readme_usage_example(pytester):
+    """The ```python example under "## Usage" in README.md passes."""
+    usage = README.read_text().split("## Usage", 1)[1]
+    example = re.search(r"```python\n(.*?)```", usage, re.DOTALL).group(1)
+    result = run_inner(pytester, example)
+    result.assert_outcomes(passed=2)
+
+
 def test_exception_is_captured(pytester):
+    """``logger.exception`` reaches caplog; lower levels are filtered."""
     result = run_inner(
         pytester,
         """
@@ -53,6 +69,7 @@ def test_exception_is_captured(pytester):
 
 
 def test_records_and_messages(pytester):
+    """Loguru records keep their message and level in caplog."""
     result = run_inner(
         pytester,
         """
@@ -81,6 +98,7 @@ def test_records_and_messages(pytester):
 
 
 def test_level_boundaries(pytester):
+    """Only records at or above caplog's level are captured."""
     result = run_inner(
         pytester,
         """
@@ -127,6 +145,7 @@ def test_level_boundaries(pytester):
 
 
 def test_handler_removed_after_teardown(pytester):
+    """The loguru sink is removed when the caplog fixture tears down."""
     result = run_inner(
         pytester,
         """
@@ -151,3 +170,57 @@ def test_handler_removed_after_teardown(pytester):
         """,
     )
     result.assert_outcomes(passed=2)
+
+
+def test_failing_test_reports_loguru_records(pytester):
+    """A failing test shows loguru records under "Captured log call"."""
+    result = run_inner(
+        pytester,
+        """
+        from loguru import logger
+
+
+        def test_fails():
+            logger.warning("loguru-in-report")
+            assert False
+        """,
+    )
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines(
+        ["*- Captured log call -*", "WARNING *loguru-in-report"]
+    )
+
+
+def test_live_log_shows_loguru_records(pytester):
+    """``log_cli`` shows loguru records live, filtered by its level."""
+    pytester.makepyfile(
+        """
+        from loguru import logger
+
+
+        def test_live():
+            logger.debug("below-live-level")
+            logger.info("loguru-live")
+        """
+    )
+    result = pytester.runpytest(
+        "-p", "no:cacheprovider", "-o", "log_cli=true", "--log-cli-level=INFO"
+    )
+    result.assert_outcomes(passed=1)
+    result.stdout.fnmatch_lines(["*- live log call -*", "INFO *loguru-live*"])
+    assert "below-live-level" not in result.stdout.str()
+
+
+def test_works_without_logging_plugin(pytester):
+    """The autouse fixture is a no-op under ``-p no:logging``."""
+    pytester.makepyfile(
+        """
+        from loguru import logger
+
+
+        def test_logs():
+            logger.info("no logging plugin")
+        """
+    )
+    result = pytester.runpytest("-p", "no:cacheprovider", "-p", "no:logging")
+    result.assert_outcomes(passed=1)

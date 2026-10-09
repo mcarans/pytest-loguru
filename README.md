@@ -46,6 +46,15 @@ def test_levels(caplog):
     assert caplog.messages == ["kept"]
 ```
 
+Loguru records also reach pytest's other log handlers, in every test
+whether or not it requests `caplog`: they appear under "Captured log call"
+when a test fails, and in the live log when `log_cli` is enabled. Each
+handler's level (`log_level`, `log_cli_level`) filters them as it does
+standard `logging` records. Loguru's own sinks, such as the default stderr
+one, are left alone.
+
+Note that coverage is 100% but the coverage tool is confused by the fixture decorator.
+
 # Development
 
 ## Environment
