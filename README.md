@@ -75,7 +75,7 @@ pre-commit will be installed when syncing uv. It is run every time you make a gi
 pre-commit install
 ```
 
-With pre-commit, all code is formatted according to [ruff](https://docs.astral.sh/ruff/) guidelines.
+With pre-commit, all code is formatted according to [ruff](https://docs.astral.sh/ruff/) guidelines, and the `uv.lock` file is kept up-to-date.
 
 To check if your changes pass pre-commit without committing, run:
 
