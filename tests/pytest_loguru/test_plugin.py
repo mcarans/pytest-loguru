@@ -172,6 +172,22 @@ def test_handler_removed_after_teardown(pytester):
     result.assert_outcomes(passed=2)
 
 
+def test_teardown_after_test_removes_all_sinks(pytester):
+    """Teardown copes with a test that called a bare ``logger.remove()``."""
+    result = run_inner(
+        pytester,
+        """
+        from loguru import logger
+
+
+        def test_remove_all(caplog):
+            logger.remove()
+            logger.info("x")
+        """,
+    )
+    result.assert_outcomes(passed=1, errors=0)
+
+
 def test_failing_test_reports_loguru_records(pytester):
     """A failing test shows loguru records under "Captured log call"."""
     result = run_inner(

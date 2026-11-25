@@ -1,5 +1,6 @@
 """Pytest plugin that routes loguru records into the caplog fixture."""
 
+import contextlib
 import logging  # pragma: no cover
 from typing import Iterator  # pragma: no cover
 
@@ -27,6 +28,20 @@ def _add_sink(handler: logging.Handler) -> int:
     return logger.add(handler, level=0, format="{message}", filter=filter_)
 
 
+def _remove_sink(handler_id: int) -> None:
+    """Remove a sink added by ``_add_sink``, if it is still there.
+
+    The test may already have removed it, typically with a bare
+    ``logger.remove()`` that drops every loguru sink, in which case loguru
+    raises ``ValueError`` for the now unknown id.
+
+    Args:
+        handler_id (int): id returned by ``_add_sink``
+    """
+    with contextlib.suppress(ValueError):
+        logger.remove(handler_id)
+
+
 @pytest.fixture
 def caplog(
     caplog: pytest.LogCaptureFixture,
@@ -45,7 +60,7 @@ def caplog(
     """
     handler_id = _add_sink(caplog.handler)
     yield caplog
-    logger.remove(handler_id)
+    _remove_sink(handler_id)
 
 
 @pytest.fixture(autouse=True)
@@ -75,4 +90,4 @@ def _loguru_report_and_live_logs(
     ]
     yield
     for handler_id in handler_ids:
-        logger.remove(handler_id)
+        _remove_sink(handler_id)
